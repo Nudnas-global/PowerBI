@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="si"> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ව්‍යාපාර විශ්ලේෂණ සඳහා Power BI</title>
+    <style>
+        :root {
+            --primary: #0078D4; /* Power BI නිල් */
+            --primary-light: #83c3f7;
+            --secondary: #107C10; /* සාර්ථක කොළ */
+            --accent: #FFB900; /* අනතුරු ඇඟවීමේ/උද්දීපන කහ */
+            --dark: #323130;
+            --light: #F3F2F1;
+            --white: #ffffff;
+            --section-bg: #f9f9f9;
+            --card-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            padding-top: 60px; /* ස්ථාවර navbar සඳහා */
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+            background-image: linear-gradient(135deg, var(--primary) 0%, #005a9e 100%);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .navbar {
+            background-color: var(--white);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.2rem;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .progress-container {
+            position: fixed;
+            top: 60px; /* navbar උසට සකසන ලදී */
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: transparent;
+            z-index: 999;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: var(--accent);
+            width: 0%;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+        }
+        
+        h3 {
+            color: var(--dark);
+            font-size: 1.5rem;
+            margin: 1.5rem 0 1rem;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .section {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--primary);
+        }
+        
+        .part-divider {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 1rem;
+            margin: 3rem 0 2rem;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.4rem;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .advantage-card {
+            background: var(--white);
+            border-radius: 5px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            border-left: 4px solid var(--primary);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .advantage-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .advantage-title {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .advantage-title::before {
+            content: "→";
+            margin-right: 0.5rem;
+            color: var(--accent);
+        }
+        
+        .step-card {
+            background: var(--white);
+            border-radius: 5px;
+            padding: 1.5rem;
+            margin: 1rem 0 1.5rem;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            border-left: 4px solid var(--secondary);
+            display: flex;
+        }
+        
+        .step-number {
+            background: var(--secondary);
+            color: var(--white);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            color: var(--secondary);
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .example {
+            background: var(--section-bg);
+            border-radius: 5px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .example-header {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .example-compare {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .compare-item {
+            flex: 1;
+            min-width: 250px;
+            padding: 1rem;
+            border-radius: 5px;
+            background: var(--white);
+        }
+        
+        .compare-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .excel {
+            border-left: 3px solid #217346; /* Excel කොළ */
+        }
+        
+        .power-bi {
+            border-left: 3px solid var(--primary); /* Power BI නිල් */
+        }
+        
+        .takeaway {
+            background: linear-gradient(to right, var(--primary-light), var(--light));
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 0.5rem 0;
+        }
+        
+        .takeaway-number {
+            display: inline-block;
+            background: var(--primary);
+            color: var(--white);
+            width: 24px;
+            height: 24px;
+            text-align: center;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .discussion, .exercise {
+            background: var(--section-bg);
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1.5rem 0;
+        }
+        
+        .discussion {
+            border-left: 4px solid #6264A7; /* Teams දම් */
+        }
+        
+        .exercise {
+            border-left: 4px solid #C30052; /* Accent රතු */
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            background-color: var(--dark);
+            color: var(--white);
+        }
+        
+        /* සම්බන්ධතා අංග සඳහා */
+        .connector {
+            position: relative;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            height: 30px;
+            opacity: 0.5;
+        }
+        
+        .connector::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background-color: var(--primary);
+        }
+        
+        .highlight {
+            background-color: #e7f3fe; /* ඉතා ලා නිල් උද්දීපනය */
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .use-case-card {
+            background: var(--white);
+            border-radius: 5px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            border-left: 4px solid #6264A7; /* Teams දම් */
+        }
+        
+        .use-case-title {
+            color: #6264A7;
+            font-weight: bold;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .use-case-title::before {
+            content: "↳";
+            margin-right: 0.5rem;
+            color: var(--accent);
+        }
+        
+        .instructor-info {
+            display: flex;
+            align-items: center;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .instructor-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-right: 1.5rem;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+        }
+        
+        .instructor-details {
+            flex: 1;
+        }
+        
+        .instructor-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+        }
+        
+        .instructor-name a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .instructor-name a:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+        
+        .learning-objectives {
+            background-color: var(--section-bg);
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--accent);
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none; /* කුඩා තිරවලදී nav-links නොපෙන්වයි */
+            }
+            
+            .advantage-card, .step-card, .example-compare {
+                flex-direction: column; /* කුඩා තිරවලදී තීරු ලෙස සකසයි */
+            }
+            
+            .compare-item {
+                width: 100%;
+            }
+            
+            .instructor-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .instructor-photo {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    
+    <nav class="navbar">
+        <a href="#" class="logo">Power BI Analytics</a>
+        <ul class="nav-links">
+            <li><a href="#introduction">හැඳින්වීම</a></li>
+            <li><a href="#overview">දළ විශ්ලේෂණය</a></li>
+            <li><a href="#components">සංරචක</a></li>
+            <li><a href="#advantages">වාසි</a></li>
+            <li><a href="#transition">සංක්‍රමණ පියවර</a></li>
+            <li><a href="#use-cases">භාවිත අවස්ථා</a></li>
+            <li><a href="#examples">උදාහරණ</a></li>
+            <li><a href="#takeaways">ප්‍රධාන කරුණු</a></li>
+        </ul>
+    </nav>
+    
+    <header>
+        <div class="container">
+            <h1>ව්‍යාපාර විශ්ලේෂණ සඳහා Power BI භාවිතය</h1>
+            <p>වඩා හොඳ විශ්ලේෂණ විසඳුම් සඳහා Power BI අවබෝධ කර ගැනීමට සහ ක්‍රියාත්මක කිරීමට සවිස්තරාත්මක මාර්ගෝපදේශනයක්</p>
+            <div class="instructor-info">
+                <img src="https://media.licdn.com/dms/image/v2/D5603AQFP_2cnqIMVbg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1722619645476?e=1753315200&v=beta&t=7bB1R6VC3dACijMjBYX82G8rsh_gBLVERxg-oCqc7n8" alt="ආචාර්ය සඳුන් දසනායක" class="instructor-photo">
+                <div class="instructor-details">
+                    <div class="instructor-name">Instructor: <a href="https://www.linkedin.com/in/sandun-dassanayake/" target="_blank">Dr Sandun Dassanayake</a></div>
+                    <p>දත්ත විශ්ලේෂණ විශේෂඥ සහ ව්‍යාපාර බුද්ධි උපදේශක</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <section id="introduction" class="section">
+            <h2>හැඳින්වීම</h2>
+            <p>"වැඩිදියුණු කළ ව්‍යාපාර විශ්ලේෂණ සඳහා Power BI භාවිතය" පිළිබඳ මෙම දේශනයට ඔබව සාදරයෙන් පිළිගනිමු. වර්තමාන දත්ත මත පදනම් වූ ව්‍යාපාරික පරිසරය තුළ, දැනුවත් තීරණ ගැනීම සඳහා දත්ත විශ්ලේෂණය කිරීමට, දෘශ්‍යමාන කිරීමට සහ තීක්ෂ්ණ බුද්ධිය ලබා ගැනීමට නිවැරදි මෙවලම් තිබීම ඉතා වැදගත් වේ. Microsoft Excel දිගු කලක් තිස්සේ දත්ත විශ්ලේෂණය සඳහා භාවිත කරන යෙදුම වුවද, Microsoft Power BI ව්‍යාපාර බුද්ධි අවශ්‍යතා සඳහා උසස් විකල්පයක් ලෙස මතු වී ඇත.</p>
+            
+            <div class="learning-objectives">
+                <h3>ඉගෙනුම් අරමුණු</h3>
+                <p>මෙම සැසිය අවසානයේදී, ඔබට:</p>
+                <ul>
+                    <li>Power BI යනු කුමක්දැයි හඳුනාගෙන එහි මූලික අරමුණ පැහැදිලි කිරීමට.</li>
+                    <li>Power BI හි මූලික සංරචක හඳුනාගෙන විස්තර කිරීමට.</li>
+                    <li>Excel වලට වඩා Power BI හි ඇති ප්‍රධාන වාසි තේරුම් ගැනීමට.</li>
+                    <li>Power BI වෙත මාරුවීම සඳහා ව්‍යුහගත ප්‍රවේශයක් ගෙනහැර දැක්වීමට.</li>
+                    <li>කර්මාන්ත හරහා Power BI සඳහා පොදු භාවිත අවස්ථා හඳුනා ගැනීමට.</li>
+                    <li>ඵලදායී Power BI ක්‍රියාත්මක කිරීම සඳහා හොඳම භාවිතයන් යෙදවීමට.</li> හැකි වනු ඇත
+                </ul>
+            </div>
+        </section>
+        
+        <section id="overview" class="section">
+            <h2>Power BI පිළිබඳ දළ විශ්ලේෂණයක්</h2>
+            <h3>Power BI යනු කුමක්ද?</h3>
+            <p>Power BI යනු Microsoft වෙතින් වන <span class="highlight">business analytics service</span> එකකි. එය මෘදුකාංග සේවා, apps, සහ connectors එකතුවක් වන අතර, ඒවා එකට ක්‍රියා කර, සම්බන්ධ නොවූ දත්ත මූලාශ්‍ර <span class="highlight">තාර්කිකව හා දෘශ්‍යමය වශයෙන් බැඳුනු අන්තර්ක්‍රියාකාරී තීක්ෂ්ණ බුද්ධියක්</span> බවට පත් කරයි.</p>
+            
+            <h3>එහි අරමුණ</h3>
+            <p>Power BI මඟින් පරිශීලකයින්ට ඔවුන්ගේ දත්ත මූලාශ්‍රවලට පහසුවෙන් සම්බන්ධ වීමට, වැදගත් දේ දෘශ්‍යමාන කිරීමට, සහ එම තොරතුරු තමන්ට අවශ්‍ය ඕනෑම අයෙකු සමඟ බෙදා ගැනීමට හැකියාව ලැබේ. එය කතාවක් කියන, ප්‍රවණතා හඳුනා ගන්නා, සහ දත්ත මත පදනම් වූ තීරණ ගැනීමට සහාය වන වාර්තා සහ dashboards නිර්මාණය කිරීමට උපකාරී වේ.</p>
+            
+            <h3>දත්ත ක්‍රියාකාරී තීක්ෂ්ණ බුද්ධියක් බවට පරිවර්තනය කිරීම</h3>
+            <p>Power BI මඟින් පරිශීලකයින්ට අමු දත්ත (raw data) වලින් ඔබ්බට යාමට බලය ලබා දේ. එය සංවිධානවලට දත්ත සංස්කෘතියක් ස්ථාපිත කිරීමට උපකාරී වන අතර, එහිදී සෑම කණ්ඩායමක්ම සහ පුද්ගලයෙකුම මතවාද මත නොව කරුණු මත පදනම්ව තීරණ ගැනීමට බල ගැන්වේ. ඔබට මෙම තීක්ෂ්ණ බුද්ධිය ඔබේ ආයතනය පුරා බෙදා ගැනීමට හෝ app එකක හෝ website එකක embed කිරීමට හැකිය.</p>
+        </section>
+        
+        <section id="components" class="section">
+            <h2>Power BI හි මූලික සංරචක</h2>
+            <p>Power BI එකට ක්‍රියා කරන ප්‍රධාන සංරචක කිහිපයකින් සමන්විත වේ:</p>
+            
+            <div class="advantage-card">
+                <div class="advantage-title">Power BI Desktop</div>
+                <ul>
+                    <li><strong>එය කුමක්ද:</strong> ඔබේ නිවසේ හෝ කාර්‍යාලිය පරිගණකයේ නොමිලේ ස්ථාපනය කළ හැකි Windows-පාදක යෙදුමකි.</li>
+                    <li><strong>අරමුණ:</strong> ඔබේ දත්ත වලට connect කිරීමට, transform කිරීමට, සහ model කිරීමට මෙන්ම, visualizations සමඟ පොහොසත්, අන්තර්ක්‍රියාකාරී reports ගොඩනැගීම සඳහා වන මූලික <span class="highlight">authoring tool</span> එක මෙය වේ.</li>
+                </ul>
+            </div>
+            
+            <div class="connector"></div>
+            
+            <div class="advantage-card">
+                <div class="advantage-title">Power BI Service (powerbi.com)</div>
+                <ul>
+                    <li><strong>එය කුමක්ද:</strong> මාර්ගගත Software as a Service (SaaS) පිරිනැමීමකි (cloud-පාදක).</li>
+                    <li><strong>අරමුණ:</strong> Reports පළ කිරීමට, dashboards නිර්මාණය කිරීමට, සගයන් සමඟ share කිරීමට සහ collaborate කිරීමට, සහ access සහ security කළමනාකරණය කිරීමට.</li>
+                </ul>
+            </div>
+            
+            <div class="connector"></div>
+            
+            <div class="advantage-card">
+                <div class="advantage-title">Power BI Mobile Apps</div>
+                <ul>
+                    <li><strong>එය කුමක්ද:</strong> Windows, iOS, සහ Android උපාංග සඳහා ලබා ගත හැකි Apps.</li>
+                    <li><strong>අරමුණ:</strong> ගමනේදී reports සහ dashboards බැලීමට සහ ඒවා සමඟ interact කිරීමට, ඕනෑම තැනක සිට තීක්ෂ්ණ බුද්ධියට access කිරීමට, සහ data alerts සැකසීමට.</li>
+                </ul>
+            </div>
+            
+            <div class="connector"></div>
+            
+            <div class="advantage-card">
+                <div class="advantage-title">Power BI Report Server</div>
+                <ul>
+                    <li><strong>එය කුමක්ද:</strong> web portal එකක් සහිත on-premises report server එකකි.</li>
+                    <li><strong>අරමුණ:</strong> Power BI reports on-premises server එකකට publish කිරීමට සහ ඒවා ඔබේ ආයතනයේ network එක තුළ distribute කිරීමට.</li>
+                </ul>
+            </div>
+            
+            <div class="connector"></div>
+            
+            <div class="advantage-card">
+                <div class="advantage-title">Power BI Embedded</div>
+                <ul>
+                    <li><strong>එය කුමක්ද:</strong> developers සඳහා වන APIs සමූහයකි.</li>
+                    <li><strong>අරමුණ:</strong> Power BI reports custom applications, portals, සහ websites වලට integrate කිරීමට.</li>
+                </ul>
+            </div>
+            
+            <h3>සාමාන්‍ය කාර්ය ප්‍රවාහය</h3>
+            <ol>
+                <li><strong>දත්ත Connect කිරීම සහ Model කිරීම, Reports නිර්මාණය කිරීම:</strong> Power BI Desktop</li>
+                <li><strong>Publish කිරීම සහ Share කිරීම, Dashboards නිර්මාණය කිරීම:</strong> Power BI Service</li>
+                <li><strong>(ගමනේදී) බැලීම සහ Interact කිරීම:</strong> Power BI Mobile</li>
+            </ol>
+        </section>
+        
+        <div class="part-divider" id="advantages">
+            I කොටස: Excel වලට වඩා Power BI හි වාසි
+        </div>
+        
+        <div class="advantage-card">
+            <div class="advantage-title">දත්ත හැසිරවීමේ හැකියාව</div>
+            <p>විශාල දත්ත පරිමාවන් සැකසීමේදී Power BI, Excel වලට වඩා සැලකිය යුතු ලෙස උසස් ක්‍රියාකාරීත්වයක් දක්වයි:</p>
+            <ul>
+                <li><strong>පරිමාණය (Scale)</strong>: Excel ආසන්න වශයෙන් පේළි මිලියනයකට සීමා වන අතර, Power BI ඔබේ පද්ධතියේ මතකය අනුව පේළි මිලියන සිය ගණනක් හැසිරවිය හැකිය.</li>
+                <li><strong>කාර්ය සාධනය (Performance)</strong>: Power BI, columnar compression සහ in-memory තාක්ෂණයන් භාවිතා කරන අතර, එමඟින් විශාල datasets වේගයෙන් සැකසීමට ඉඩ සලසයි.</li>
+                <li><strong>සංකීර්ණත්වය (Complexity)</strong>: Power BI, Excel හි කරදරකාරී VLOOKUP හෝ XLOOKUP formulas අවශ්‍ය වන සංකීර්ණ දත්ත සම්බන්ධතා වඩාත් කාර්යක්ෂමව කළමනාකරණය කරයි.</li>
+            </ul>
+        </div>
+        
+        <div class="connector"></div>
+        
+        <div class="advantage-card">
+            <div class="advantage-title">දෘශ්‍යකරණ විකල්ප (Visualization Options)</div>
+            <p>Power BI, අමු දත්ත සිත් ඇදගන්නා දෘශ්‍ය කථා බවට පරිවර්තනය කරන උසස් දෘශ්‍යකරණ හැකියාවන් ඔබට ලබා දේ:</p>
+            <ul>
+                <li><strong>අන්තර්ක්‍රියාකාරී දෘශ්‍ය (Interactive Visuals)</strong>: Excel හි මූලික charts වලින් ඔබ්බට ගිය, ගතික (dynamic), අන්තර්ක්‍රියාකාරී දෘශ්‍යකරණයන්ගෙන් යුත් පොහොසත් පුස්තකාලයක් (library) එකක් Power BI පිරිනමයි.</li>
+                <li><strong>අභිරුචි දෘශ්‍ය (Custom Visuals)</strong>: Power BI marketplace මඟින් විශේෂිත කර්මාන්ත හෝ භාවිත අවස්ථා සඳහා සකස් කරන ලද විශේෂිත දෘශ්‍යකරණයන් import කිරීමට ඉඩ සලසයි.</li>
+                <li><strong>Drill-Through හැකියාවන්</strong>: ක්ලික් කිරීම් කිහිපයකින් සාරාංශ දසුන් වල සිට සවිස්තරාත්මක දසුන් වෙත පහසුවෙන් navigate කිරීමට පරිශීලකයින්ට හැකිය.</li>
+                <li><strong>Cross-Filtering</strong>: එක් දෘශ්‍යකරණයක් සමඟ අන්තර්ක්‍රියා කිරීමෙන් එකම dashboard හි ඇති අනෙකුත් දෘශ්‍යවල දත්ත ස්වයංක්‍රීයව filter වේ.</li>
+            </ul>
+        </div>
+        
+        <div class="connector"></div>
+        
+        <div class="advantage-card">
+            <div class="advantage-title">දත්ත සම්බන්ධතාව (Data Connectivity)</div>
+            <p>Power BI, දත්ත ඒකාබද්ධ කිරීම සරල කරන ශක්තිමත් සම්බන්ධතා විකල්ප දක්වයි:</p>
+            <ul>
+                <li><strong>Direct Query</strong>: දත්ත import නොකර සෘජුවම දත්ත මූලාශ්‍රවලට connect වීමට ඉඩ සලසන අතර, memory භාවිතය අඩු කරමින් real-time analytics සඳහා ඉඩ සලසයි.</li>
+                <li><strong>විවිධ මූලාශ්‍ර (Diverse Sources)</strong>: SQL databases, Excel files, SharePoint lists, web services, සහ Salesforce වැනි cloud applications ඇතුළු 100+ දත්ත මූලාශ්‍රවලට පහසුවෙන් connect වේ.</li>
+                <li><strong>ඒකාබද්ධ දත්ත දසුන (Unified Data View)</strong>: සංකීර්ණ Excel-පාදක විසඳුම් නොමැතිව විවිධ දත්ත මූලාශ්‍රවලින් දත්ත ඒකාබද්ධ දසුනක් නිර්මාණය කරයි.</li>
+            </ul>
+        </div>
+        
+        <div class="connector"></div>
+        
+        <div class="advantage-card">
+            <div class="advantage-title">Real-Time දත්ත යාවත්කාලීන කිරීම්</div>
+            <p>සජීවී දත්ත සමඟ වැඩ කිරීමේ හැකියාව කාල සංවේදී විශ්ලේෂණ සඳහා සැලකිය යුතු වාසියක් සපයයි:</p>
+            <ul>
+                <li><strong>Scheduled Refreshes</strong>: නියමිත කාල පරාසයන් තුළ (පැයකට වරක්, දිනපතා, සතිපතා) ස්වයංක්‍රීය දත්ත refreshes වින්‍යාස කරන්න.</li>
+                <li><strong>Live Connections</strong>: ආසන්න real-time යාවත්කාලීන කිරීම් සඳහා මූලාශ්‍ර පද්ධති සමඟ සෘජු සම්බන්ධතා පවත්වා ගන්න.</li>
+                <li><strong>Stream Analytics</strong>: Power BI, Excel හි විෂය පථයෙන් ඔබ්බට ගිය හැකියාවක් වන real-time dashboards සඳහා streaming දත්ත සැකසිය හැකිය.</li>
+            </ul>
+        </div>
+        
+        <div class="connector"></div>
+        
+        <div class="advantage-card">
+            <div class="advantage-title">සහයෝගීතාව සහ බෙදාගැනීම (Collaboration and Sharing)</div>
+            <p>Power BI හි cloud-පාදක නිර්මාණ ශිල්පය බාධාවකින් තොරව, සහයෝගීතාවට පහසුකම් සපයයි:</p>
+            <ul>
+                <li><strong>Power BI Service</strong>: ආයතනය පුරා access සඳහා reports cloud වෙත publish කරන්න.</li>
+                <li><strong>Access Control</strong>: පරිශීලකයින්ට ඔවුන්ගේ භූමිකාවන්ට අදාළ දත්ත පමණක් පෙනෙන බවට සහතික කිරීම සඳහා row-level security ක්‍රියාත්මක කරන්න.</li>
+                <li><strong>Mobile Access</strong>: Power BI app හරහා mobile උපාංගවල dashboards සහ reports වලට access කරන්න.</li>
+                <li><strong>Embedded Analytics</strong>: අභ්‍යන්තර portals, websites, හෝ applications වල reports embed කරන්න.</li>
+            </ul> පරිශීලකයාට ඉඩ සලසයි.
+        </div>
+        
+        <div class="connector"></div>
+        
+        <div class="advantage-card">
+            <div class="advantage-title">උසස් විශ්ලේෂණ (Advanced Analytics)</div>
+            <p>Power BI, නවීන විශ්ලේෂණ හැකියාවන් ඇතුළත් කරයි:</p>
+            <ul>
+                <li><strong>DAX Formulas</strong>: Data Analysis Expressions, Excel හි formulas වලින් ඔබ්බට ගිය ප්‍රබල ගණනය කිරීමේ හැකියාවන් සපයයි.</li>
+                <li><strong>Quick Measures</strong>: වසරින් වසර සැසඳීම් හෝ rolling averages වැනි සංකීර්ණ ගණනය කිරීම් පහසුවෙන් නිර්මාණය කරන්න.</li>
+                <li><strong>AI Integration</strong>: forecasting, anomaly detection, සහ text analytics සඳහා ගොඩනඟන ලද AI කාර්යයන් භාවිතා කරන්න.</li>
+                <li><strong>R and Python Integration</strong>: උසස් සංඛ්‍යාන ආකෘති සහ machine learning algorithms ඇතුළත් කරන්න, පරිශීලකයාට ඉඩ සලසයි.</li>
+            </ul>
+        </div>
+        
+        <div class="connector"></div>
+        
+        <div class="advantage-card">
+            <div class="advantage-title">පරිශීලක අතුරුමුහුණත සහ අත්දැකීම (User Interface and Experience)</div>
+            <p>Power BI, දත්ත විශ්ලේෂණය සඳහා විශේෂයෙන් නිර්මාණය කරන ලද අතුරුමුහුණතක් ඉදිරිපත් කරයි:</p>
+            <ul>
+                <li><strong>Drag-and-Drop Interface</strong>: fields, canvas මතට drag කිරීමෙන් සරලව සංකීර්ණ දෘශ්‍යකරණයන් නිර්මාණය කරන්න.</li>
+                <li><strong>ස්ථාවර Navigation</strong>: desktop, web, සහ mobile platforms හරහා ස්ථාවර පරිශීලක අත්දැකීමක් පවත්වා ගන්න.</li>
+                <li><strong>Natural Language Queries</strong>: Q&A විශේෂාංගය භාවිතයෙන් සරල ඉංග්‍රීසියෙන් ඔබේ දත්ත පිළිබඳ ප්‍රශ්න අසන්න.</li>
+                <li><strong>Smart Narratives</strong>: ඔබේ දෘශ්‍යකරණයන් පිළිබඳ තීක්ෂ්ණ බුද්ධිය සහ පෙළ විස්තර ස්වයංක්‍රීයව ජනනය කරන්න.</li>
+            </ul> ඉඩ සලසයි.
+        </div>
+        
+        <div class="part-divider" id="transition">
+            II කොටස: Power BI සමඟ විශ්ලේෂණ විසඳුම් වෙත මාරුවීම
+        </div>
+        
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <div class="step-title">ඔබේ දත්ත අවශ්‍යතා තේරුම් ගැනීම</div>
+                <p>ඔබේ සංක්‍රාන්තිය ආරම්භ කරන්න:</p>
+                <ul>
+                    <li><strong>ව්‍යාපාරික ප්‍රශ්න නිර්වචනය කිරීම (Defining Business Questions)</strong>: දත්ත සමඟ පිළිතුරු දිය යුතු නිශ්චිත ප්‍රශ්න පැහැදිලිව ප්‍රකාශ කරන්න.</li>
+                    <li><strong>ප්‍රධාන ප්‍රමිතික හඳුනා ගැනීම (Identifying Key Metrics)</strong>: නිරීක්ෂණය කිරීමට වඩාත්ම වටිනා KPIs සහ metrics තීරණය කරන්න.</li>
+                    <li><strong>දත්ත මූලාශ්‍ර සිතියම් ගත කිරීම (Mapping Data Sources)</strong>: ඔබේ දත්ත දැනට පවතින ස්ථානය සහ එයට access කළ හැකි ආකාරය ලේඛනගත කරන්න.</li>
+                    <li><strong>දත්ත ගුණාත්මකභාවය තක්සේරු කිරීම (Assessing Data Quality)</strong>: ඔබේ දත්තවල සම්පූර්ණත්වය, නිරවද්‍යතාවය සහ කාලෝචිතභාවය ඇගයීමට ලක් කරන්න.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="connector"></div>
+        
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <div class="step-title">Power BI සංරචක භාවිතය</div>
+                <p>Power BI පරිසර පද්ධතිය සමඟ හුරු වන්න:</p>
+                <ul>
+                    <li><strong>Power BI Desktop</strong>: reports සහ data models නිර්මාණය කිරීම සඳහා වන මූලික authoring tool.</li>
+                    <li><strong>Power BI Service</strong>: reports share කිරීම සහ collaborate කිරීම සඳහා වන cloud-පාදක platform.</li>
+                    <li><strong>Power BI Mobile</strong>: iOS සහ Android උපාංගවල reports වලට access කිරීම සඳහා වන Apps.</li>
+                    <li><strong>Power BI Report Server</strong>: on-premises deployment අවශ්‍ය වන ආයතන සඳහා.</li>
+                    <li><strong>Power BI Embedded</strong>: custom applications වලට reports integrate කිරීම සඳහා.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="connector"></div>
+        
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <div class="step-title">දත්ත සකස් කිරීම සහ පරිවර්තනය (Data Preparation and Transformation)</div>
+                <p>ඔබේ දත්ත විශ්ලේෂණයට සූදානම් බව සහතික කර ගන්න:</p>
+                <ul>
+                    <li><strong>Power Query</strong>: දත්ත මූලාශ්‍රවලට connect වීමට, දත්ත transform කිරීමට, සහ පුනරාවර්තන දත්ත සකස් කිරීමේ ක්‍රියාවලියක් නිර්මාණය කිරීමට මෙම ETL tool භාවිතා කරන්න.</li>
+                    <li><strong>දත්ත පිරිසිදු කිරීම (Data Cleansing)</strong>: අනුපිටපත් ඉවත් කරන්න, ආකෘති ප්‍රමිතිකරණය කරන්න, සහ නැතිවූ අගයන් හසුරුවන්න.</li>
+                    <li><strong>දත්ත පරිවර්තනය (Data Transformation)</strong>: calculated columns නිර්මාණය කරන්න, දත්ත pivot/unpivot කරන්න, සහ queries merge/append කරන්න.</li>
+                    <li><strong>Custom Functions</strong>: සංකීර්ණ transformations සඳහා නැවත භාවිත කළ හැකි functions නිර්මාණය කරන්න.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="connector"></div>
+        
+        <div class="step-card">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <div class="step-title">Data Model එකක් ගොඩනැගීම</div>
+                <p>ඔබේ විශ්ලේෂණ සඳහා ශක්තිමත් පදනමක් නිර්මාණය කරන්න:</p>
+                <ul>
+                    <li><strong>Star Schema Design</strong>: ප්‍රශස්ත කාර්ය සාධනය සඳහා දත්ත fact සහ dimension tables වලට සංවිධානය කරන්න.</li>
+                    <li><strong>Relationship Definition</strong>: primary සහ foreign keys භාවිතයෙන් tables අතර සම්බන්ධතා ස්ථාපිත කරන්න.</li>
+                    <li><strong>Hierarchies</strong>: drill-down මාර්ග නිර්මාණය කරන්න (උදා: Year > Quarter > Month > Day).</li>
+                    <li><strong>Calculated Columns</strong>: ඔබේ data model එකට සෘජුවම business logic එකතු කරන්න.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="connector"></div>
+        
+        <div class="step-card">
+            <div class="step-number">5</div>
+            <div class="step-content">
+                <div class="step-title">උසස් ගණනය කිරීම් සඳහා DAX යෙදීම</div>
+                <p>Power BI හි දත්ත විශ්ලේෂණ භාෂාව ප්‍රගුණ කරන්න:</p>
+                <ul>
+                    <li><strong>Measures</strong>: filters සහ slicers වලට ගතිකව ප්‍රතිචාර දක්වන ගණනය කිරීම් නිර්මාණය කරන්න.</li>
+                    <li><strong>Time Intelligence</strong>: කාල පරිච්ඡේදයෙන් කාල පරිච්ඡේදයට සැසඳීම් සහ rolling calculations ක්‍රියාත්මක කරන්න.</li>
+                    <li><strong>Context Transition</strong>: සංකීර්ණ ගණනය කිරීම් සඳහා filter context අභිබවා යන ආකාරය තේරුම් ගන්න.</li>
+                    <li><strong>Error Handling</strong>: ඔබේ formulas වල ශක්තිමත් error handling ක්‍රියාත්මක කරන්න.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="connector"></div>
+        
+        <div class="step-card">
+            <div class="step-number">6</div>
+            <div class="step-content">
+                <div class="step-title">අන්තර්ක්‍රියාකාරී Reports සහ Dashboards නිර්මාණය කිරීම</div>
+                <p>ඔබේ දත්ත කතාව කියන සිත් ඇදගන්නා දෘශ්‍යකරණයන් නිර්මාණය කරන්න:</p>
+                <ul>
+                    <li><strong>Report Layout</strong>: තොරතුරු ධූරාවලිය කෙරෙහි අවධානය යොමු කරමින් දෘශ්‍යකරණයන් තාර්කිකව සංවිධානය කරන්න.</li>
+                    <li><strong>Interactivity</strong>: filters, slicers, සහ drill-through actions ක්‍රියාත්මක කරන්න.</li>
+                    <li><strong>ස්ථාවර Design</strong>: වර්ණ, අකුරු, සහ formatting සමඟ දෘශ්‍ය ස්ථාවරත්වය පවත්වා ගන්න.</li>
+                    <li><strong>Mobile Optimization</strong>: විවිධ තිර ප්‍රමාණවලට හොඳින් ගැලපෙන reports නිර්මාණය කරන්න.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="connector"></div>
+        
+        <div class="step-card">
+            <div class="step-number">7</div>
+            <div class="step-content">
+                <div class="step-title">Business Intelligence හොඳම භාවිතයන් කෙරෙහි අවධානය යොමු කිරීම</div>
+                <p>බලපෑම උපරිම කිරීම සඳහා ඔප්පු කරන ලද BI මූලධර්ම යොදන්න:</p>
+                <ul>
+                    <li><strong>සරල බව (Simplicity)</strong>: අනවශ්‍ය දෘශ්‍යවලින් dashboards පිරවීමෙන් වළකින්න.</li>
+                    <li><strong>සන්දර්භය (Context)</strong>: අදාළ සැසඳීම් සහ මිණුම් සපයන්න.</li>
+                    <li><strong>ප්‍රවේශ්‍යතාව (Accessibility)</strong>: දෘශ්‍යකරණයන් වර්ණ අන්ධ අයට හිතකාමී සහ ინტუიციური බව සහතික කරන්න.</li>
+                    <li><strong>ලේඛනගත කිරීම (Documentation)</strong>: data dictionaries සහ calculation references නිර්මාණය කරන්න.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="connector"></div>
+        
+        <div class="step-card">
+            <div class="step-number">8</div>
+            <div class="step-content">
+                <div class="step-title">පුනරාවර්තනය සහ වැඩිදියුණු කිරීම (Iterating and Improving)</div>
+                <p>ඔබේ Power BI ක්‍රියාත්මක කිරීම පරිණාමය වන වත්කමක් ලෙස සලකන්න:</p>
+                <ul>
+                    <li><strong>පරිශීලක ප්‍රතිපෝෂණ (User Feedback)</strong>: අවසාන පරිශීලකයින්ගෙන් නිතිපතා අදහස් ලබා ගන්න.</li>
+                    <li><strong>භාවිත විශ්ලේෂණ (Usage Analytics)</strong>: වඩාත්ම භාවිත වන reports සහ features නිරීක්ෂණය කරන්න.</li>
+                    <li><strong>කාර්ය සාධන ප්‍රශස්තකරණය (Performance Optimization)</strong>: වඩා හොඳ ප්‍රතිචාර කාලයන් සඳහා data models සහ queries පිරිපහදු කරන්න.</li>
+                    <li><strong>විශේෂාංග හුරු කරවීම (Feature Adoption)</strong>: නව Power BI features සහ හැකියාවන් සමඟ යාවත්කාලීනව සිටින්න.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <section id="use-cases" class="section">
+            <h2>භාවිත අවස්ථා: Power BI ක්‍රියාත්මක වන ආකාරය</h2>
+            <p>Power BI බහුකාර්ය වන අතර විවිධ කර්මාන්ත සහ දෙපාර්තමේන්තු හරහා භාවිතා වේ:</p>
+            
+            <div class="use-case-card">
+                <div class="use-case-title">විකුණුම් වාර්තා (Sales Reports)</div>
+                <p>විකුණුම් කාර්ය සාධනය track කරන්න, කලාපය/නිෂ්පාදනය අනුව විකුණුම් විශ්ලේෂණය කරන්න, ඉහළම පාරිභෝගිකයින් හඳුනා ගන්න, සහ කාලයත් සමඟ විකුණුම් ප්‍රවණතා දෘශ්‍යමාන කරන්න.</p>
+            </div>
+            
+            <div class="connector"></div>
+            
+            <div class="use-case-card">
+                <div class="use-case-title">මූල්‍ය විශ්ලේෂණ (Financial Analytics)</div>
+                <p>ආදායම්/වියදම් monitor කරන්න, අන්තර්ක්‍රියාකාරී අයවැය reports නිර්මාණය කරන්න, variance analysis සිදු කරන්න, සහ මූල්‍ය forecasts සංවර්ධනය කරන්න.</p>
+            </div>
+            
+            <div class="connector"></div>
+            
+            <div class="use-case-card">
+                <div class="use-case-title">අලෙවිකරණ කාර්ය සාධනය (Marketing Performance)</div>
+                <p>ප්‍රචාරක ව්‍යාපාරවල ඵලදායීතාව track කරන්න, පාරිභෝගික ජනවිකාස විශ්ලේෂණය කරන්න, අලෙවිකරණ නාලිකා හරහා ROI මැන බලන්න, සහ social media engagement නිරීක්ෂණය කරන්න.</p>
+            </div>
+            
+            <div class="connector"></div>
+            
+            <div class="use-case-card">
+                <div class="use-case-title">මෙහෙයුම් Dashboards (Operational Dashboards)</div>
+                <p>නිෂ්පාදන/ලොජිස්ටික්ස් සඳහා KPIs monitor කරන්න, supply chain management ප්‍රශස්ත කරන්න, සහ real-time inventory මට්ටම් track කරන්න.</p>
+            </div>
+            
+            <div class="connector"></div>
+            
+            <div class="use-case-card">
+                <div class="use-case-title">මානව සම්පත් (Human Resources)</div>
+                <p>සේවක පිරිවැටුම විශ්ලේෂණය කරන්න, බඳවා ගැනීමේ ඵලදායීතාව track කරන්න, ශ්‍රම බලකා ජනවිකාස monitor කරන්න, සහ පුහුණු වැඩසටහන් ප්‍රතිඵල මැන බලන්න.</p>
+            </div>
+            
+            <div class="connector"></div>
+            
+            <div class="use-case-card">
+                <div class="use-case-title">සෞඛ්‍ය සේවය (Healthcare)</div>
+                <p>රෝගීන්ගේ ප්‍රතිඵල විශ්ලේෂණය කරන්න, රෝහල් කාර්ය සාධන metrics monitor කරන්න, සම්පත් භාවිතය track කරන්න, සහ සෞඛ්‍ය සේවා සැපයීමේ ප්‍රවණතා හඳුනා ගන්න.</p>
+            </div>
+        </section>
+        
+        <section id="examples" class="section">
+            <h2>ප්‍රායෝගික යෙදුම් උදාහරණ</h2>
+            
+            <div class="example">
+                <div class="example-header">උදාහරණය 1: විකුණුම් කාර්ය සාධන Dashboard</div>
+                <div class="example-compare">
+                    <div class="compare-item excel">
+                        <div class="compare-title">Excel ප්‍රවේශය</div>
+                        <p>Worksheets කිහිපයක් පුරා පැතිරුණු একাধিক pivot tables සහ charts සමඟ manual යාවත්කාලීන කිරීම්.</p>
+                    </div>
+                    <div class="compare-item power-bi">
+                        <div class="compare-title">Power BI විසඳුම</div>
+                        <p>කලාප, නිෂ්පාදන, සහ කාල පරිච්ඡේද හරහා real-time විකුණුම් දත්ත පෙන්වන, ස්වයංක්‍රීය refreshes සහිත, drill-down හැකියාවන් ඇති අන්තර්ක්‍රියාකාරී dashboard.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example">
+                <div class="example-header">උදාහරණය 2: මූල්‍ය වාර්තාකරණය</div>
+                <div class="example-compare">
+                    <div class="compare-item excel">
+                        <div class="compare-title">Excel ප්‍රවේශය</div>
+                        <p>Manual මැදිහත්වීමක් අවශ්‍ය වන workbooks කිහිපයක් අතර සංකීර්ණ formulas සහ links.</p>
+                    </div>
+                    <div class="compare-item power-bi">
+                        <div class="compare-title">Power BI විසඳුම</div>
+                        <p>Variance analysis සහ forecasting සඳහා DAX measures සහිත ඒකාබද්ධ මූල්‍ය ආකෘතියක්, ආරක්ෂිත online access හරහා පාර්ශවකරුවන්ට ප්‍රවේශ විය හැකිය.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example">
+                <div class="example-header">උදාහරණය 3: අලෙවිකරණ ප්‍රචාරක විශ්ලේෂණය</div>
+                <div class="example-compare">
+                    <div class="compare-item excel">
+                        <div class="compare-title">Excel ප්‍රවේශය</div>
+                        <p>ප්‍රචාරක කාර්ය සාධන metrics වලට filter කිරීමට හෝ drill down කිරීමට සීමිත හැකියාවක් ඇති static charts.</p>
+                    </div>
+                    <div class="compare-item power-bi">
+                        <div class="compare-title">Power BI විසඳුම</div>
+                        <p>Real-time social media integration සහ පාරිභෝගික කොටස් හරහා ROI ගණනය කිරීම් සහිත අන්තර්ක්‍රියාකාරී ප්‍රචාරක කාර්ය සාධන dashboard.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="takeaways" class="section">
+            <h2>ප්‍රධාන කරුණු</h2>
+            
+            <div class="takeaway">
+                <span class="takeaway-number">1</span>
+                විශාල datasets හැසිරවීමේදී, අන්තර්ක්‍රියාකාරී දෘශ්‍යකරණයන් සැපයීමේදී, සහ real-time analytics සක්‍රීය කිරීමේදී Power BI, Excel වලට වඩා සැලකිය යුතු ලෙස උසස් වේ.
+            </div>
+            
+            <div class="takeaway">
+                <span class="takeaway-number">2</span>
+                Power BI වෙත මාරුවීම සඳහා, ඔබේ දත්ත අවශ්‍යතා තේරුම් ගැනීමෙන් ආරම්භ වී පුනරාවර්තන වැඩිදියුණු කිරීමේ ක්‍රියාවලියකින් අවසන් වන ව්‍යුහගත ප්‍රවේශයක් අවශ්‍ය වේ.
+            </div>
+            
+            <div class="takeaway">
+                <span class="takeaway-number">3</span>
+                Power BI components, data modeling, සහ DAX calculations ප්‍රගුණ කිරීම සාර්ථක ක්‍රියාත්මක කිරීම සඳහා අත්‍යවශ්‍ය කුසලතා වේ.
+            </div>
+            
+            <div class="takeaway">
+                <span class="takeaway-number">4</span>
+                ඵලදායී Power BI විසඳුම්, ක්‍රියාකාරී තීක්ෂ්ණ බුද්ධිය ලබා දීම සඳහා business intelligence හොඳම භාවිතයන් සමඟ තාක්ෂණික හැකියාවන් තුලනය කරයි.
+            </div>
+            
+            <div class="takeaway">
+                <span class="takeaway-number">5</span>
+                දත්ත වටිනා ව්‍යාපාර බුද්ධියක් බවට පරිවර්තනය කිරීම සඳහා විවිධ කර්මාන්ත සහ දෙපාර්තමේන්තු හරහා Power BI යෙදිය හැකිය.
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>සාකච්ඡා ප්‍රශ්න</h2>
+            
+            <div class="discussion">
+                <ol>
+                    <li>ඔබේ ආයතනයට විශේෂිත Excel-පාදක ක්‍රියාවලි Power BI වෙත මාරු කිරීමෙන් ලැබෙන ප්‍රතිලාභ මොනවාද?</li>
+                    <li>Excel සිට Power BI වෙත මාරුවීමේදී ඔබ අපේක්ෂා කරන අභියෝග මොනවාද, සහ ඔබ ඒවාට මුහුණ දෙන්නේ කෙසේද?</li>
+                    <li>Real-time දත්ත යාවත්කාලීන කිරීම් සහ වැඩිදියුණු කළ දෘශ්‍යකරණ හැකියාවන් ඔබේ භූමිකාවේ හෝ ආයතනයේ තීරණ ගැනීමේ ක්‍රියාවලීන් වෙනස් කරන්නේ කෙසේද?</li>
+                    <li>ඔබේ වත්මන් සේවා පරිසරයට වඩාත්ම අදාළ වන භාවිත අවස්ථාව කුමක්ද, සහ එම අවස්ථාව සඳහා ඔබ Power BI ක්‍රියාත්මක කරන්නේ කෙසේද?</li>
+                </ol>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>නිර්දේශිත අභ්‍යාස</h2>
+            
+            <div class="exercise">
+                <ol>
+                    <li>Power BI Desktop බාගත කර ස්ථාපනය කර අතුරුමුහුණත ගවේෂණය කරන්න.</li>
+                    <li>ඔබේ ආයතනයේ පවතින Excel report එකක් හඳුනාගෙන එය Power BI dashboard එකක් ලෙස නැවත සිතාගත හැකි ආකාරය සටහන් කරන්න.</li>
+                    <li>Power BI, විවිධ දත්ත මූලාශ්‍රවලට connect කිරීමට සහ ඒවා අතර relationships නිර්මාණය කිරීමට පුහුණු වන්න.</li>
+                    <li>YTD performance, moving averages, හෝ contribution margins වැනි පොදු ව්‍යාපාරික ගණනය කිරීම් සඳහා DAX measures නිර්මාණය කිරීමට උත්සාහ කරන්න.</li>
+                </ol>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>Power BI සමඟ ආරම්භ කිරීම</h2>
+            <h3>ඔබේ පළමු පියවර</h3>
+            <p><span class="highlight">Power BI Desktop බාගත කර ස්ථාපනය කරන්න:</span> එය Microsoft website එකෙන් නොමිලේ ලබා ගත හැකිය. ඔබ ඔබේ ප්‍රායෝගික අත්දැකීම ආරම්භ කරන්නේ මෙතැනින්.</p>
+            
+            <h3>සම්පත් සහ මාර්ගෝපදේශ</h3>
+            <ul>
+                <li><a href="https://powerbi-analytics-sd.netlify.app/#1" target="_blank" style="color: var(--red); text-decoration: underline;"> <span class="highlight">Our first PowerBI tutorial.</span></a></li>
+                <li>Microsoft Learn පුළුල් Power BI ලේඛන සහ tutorials පිරිනමයි.</li>
+                <li>බොහෝ online communities සහ forums (උදා: Power BI Community).</li>
+                <li>නියැදි datasets හෝ ඔබේම දත්ත සමඟ පුහුණු වන්න.</li>
+            </ul>
+            
+            <h3>ඉදිරි ගමන</h3>
+            <p>මෙම හැඳින්වීම ආරම්භයක් පමණි. ගවේෂණය ආරම්භ කරන්න, දත්ත වලට connect වීමට උත්සාහ කරන්න, සහ ඔබේ පළමු visualization ගොඩනැගීමට උත්සාහ කරන්න. මතක තබා ගන්න Power BI හි ප්‍රවීණත්වය වර්ධනය කර ගැනීම යනු දත්ත වලින් අර්ථවත් තීක්ෂ්ණ බුද්ධියක් ලබා ගැනීමේ ඔබේ හැකියාවෙන් ප්‍රතිලාභ ගෙන දෙන ගමනකි.</p>
+        </section>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>© වැඩිදියුණු කළ ව්‍යාපාර විශ්ලේෂණ සඳහා Power BI භාවිතය</p>
+            <p><a href="https://www.linkedin.com/in/sandun-dassanayake/" target="_blank" style="color: var(--white); text-decoration: underline;">Dr Sandun Dassanayake</a> විසින් ඉදිරිපත් කරන ලදී</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Progress bar ක්‍රියාකාරීත්වය
+        window.onscroll = function() {
+            var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            var scrolled = (winScroll / height) * 100;
+            document.getElementById("progressBar").style.width = scrolled + "%";
+        };
+        
+        // Anchor links සඳහා Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
